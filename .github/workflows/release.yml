@@ -1,0 +1,155 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Semantic version for the release, for example 1.0.0"
+        required: true
+        type: string
+      minimumVersion:
+        description: "Minimum supported version"
+        required: false
+        default: ""
+        type: string
+      releaseNotes:
+        description: "Release notes"
+        required: false
+        default: "Bug fixes and performance improvements."
+        type: string
+
+permissions:
+  contents: write
+
+env:
+  APP_NAME: MediSearch
+  CONFIGURATION: Release
+  RUNTIME: win-x64
+
+jobs:
+  release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve version
+        id: version
+        shell: pwsh
+        run: |
+          $version = "${{ github.event.inputs.version }}"
+          if ([string]::IsNullOrWhiteSpace($version)) {
+            $version = "0.1.${{ github.run_number }}"
+          }
+
+          if ($version -notmatch '^\d+\.\d+\.\d+$') {
+            throw "Version '$version' must use semantic version format MAJOR.MINOR.PATCH."
+          }
+
+          $minimumVersion = "${{ github.event.inputs.minimumVersion }}"
+          if ([string]::IsNullOrWhiteSpace($minimumVersion)) {
+            $minimumVersion = $version
+          }
+
+          if ($minimumVersion -notmatch '^\d+\.\d+\.\d+$') {
+            throw "Minimum version '$minimumVersion' must use semantic version format MAJOR.MINOR.PATCH."
+          }
+
+          "version=$version" >> $env:GITHUB_OUTPUT
+          "minimumVersion=$minimumVersion" >> $env:GITHUB_OUTPUT
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore
+        run: dotnet restore MediSearch.slnx
+
+      - name: Build
+        run: dotnet build MediSearch.slnx --configuration ${{ env.CONFIGURATION }} --no-restore /p:Version=${{ steps.version.outputs.version }} /p:AssemblyVersion=${{ steps.version.outputs.version }}.0 /p:FileVersion=${{ steps.version.outputs.version }}.0 /p:InformationalVersion=${{ steps.version.outputs.version }}
+
+      - name: Test
+        shell: pwsh
+        run: |
+          $testProjects = Get-ChildItem -Recurse -Filter *.csproj | Where-Object { $_.FullName -match '(Tests|Test)\\' -or $_.BaseName -match '(Tests|Test)$' }
+          if ($testProjects.Count -eq 0) {
+            Write-Host "No test projects found."
+            exit 0
+          }
+
+          dotnet test MediSearch.slnx --configuration $env:CONFIGURATION --no-build --verbosity normal
+
+      - name: Publish desktop app
+        run: dotnet publish MediSearch/MediSearch.csproj --configuration ${{ env.CONFIGURATION }} --runtime ${{ env.RUNTIME }} --self-contained true --no-build --output artifacts/publish /p:Version=${{ steps.version.outputs.version }} /p:AssemblyVersion=${{ steps.version.outputs.version }}.0 /p:FileVersion=${{ steps.version.outputs.version }}.0 /p:InformationalVersion=${{ steps.version.outputs.version }}
+
+      - name: Publish backend API
+        run: dotnet publish MedicineQuickSearch/MedicineQuickSearch.csproj --configuration ${{ env.CONFIGURATION }} --runtime ${{ env.RUNTIME }} --self-contained false --output artifacts/publish/MedicineQuickSearch
+
+      - name: Publish updater
+        run: dotnet publish MediSearch.Updater/MediSearch.Updater.csproj --configuration ${{ env.CONFIGURATION }} --runtime ${{ env.RUNTIME }} --self-contained true --no-build --output artifacts/updater /p:Version=${{ steps.version.outputs.version }} /p:AssemblyVersion=${{ steps.version.outputs.version }}.0 /p:FileVersion=${{ steps.version.outputs.version }}.0 /p:InformationalVersion=${{ steps.version.outputs.version }}
+
+      - name: Generate version metadata
+        shell: pwsh
+        run: |
+          Copy-Item artifacts/updater/MediSearch.Updater.exe artifacts/publish/MediSearch.Updater.exe -Force
+
+          $repo = "${{ github.repository }}"
+          $releaseNotes = @'
+          ${{ github.event.inputs.releaseNotes }}
+          '@
+          if ([string]::IsNullOrWhiteSpace($releaseNotes)) {
+            $releaseNotes = "Bug fixes and performance improvements."
+          }
+
+          $metadata = [ordered]@{
+            version = "${{ steps.version.outputs.version }}"
+            minimumVersion = "${{ steps.version.outputs.minimumVersion }}"
+            downloadUrl = "https://github.com/$repo/releases/latest/download/${{ env.APP_NAME }}.zip"
+            installerUrl = "https://github.com/$repo/releases/latest/download/${{ env.APP_NAME }}Setup.exe"
+            releaseNotes = $releaseNotes.Trim()
+          }
+
+          $metadata | ConvertTo-Json -Depth 3 | Set-Content artifacts/publish/version.json -Encoding UTF8
+
+          $settings = [ordered]@{
+            owner = "${{ github.repository_owner }}"
+            repo = "${{ github.event.repository.name }}"
+            versionMetadataUrl = "https://github.com/$repo/releases/latest/download/version.json"
+            metadataCacheMinutes = 60
+            releaseNotes = $releaseNotes.Trim()
+          }
+
+          $settings | ConvertTo-Json -Depth 3 | Set-Content artifacts/publish/update-settings.json -Encoding UTF8
+
+      - name: Package release
+        shell: pwsh
+        run: Compress-Archive -Path artifacts/publish/* -DestinationPath artifacts/${{ env.APP_NAME }}.zip -Force
+
+      - name: Install Inno Setup
+        shell: pwsh
+        run: choco install innosetup --no-progress --yes
+
+      - name: Build Windows installer
+        shell: pwsh
+        run: |
+          $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          & $iscc installer/MediSearch.iss /DMyAppVersion=${{ steps.version.outputs.version }} /DSourceDir="$PWD\artifacts\publish" /DOutputDir="$PWD\artifacts"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.version.outputs.version }}
+          name: v${{ steps.version.outputs.version }}
+          body: ${{ github.event.inputs.releaseNotes || 'Bug fixes and performance improvements.' }}
+          files: |
+            artifacts/${{ env.APP_NAME }}Setup.exe
+            artifacts/${{ env.APP_NAME }}.zip
+            artifacts/publish/version.json
+          make_latest: true

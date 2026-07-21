@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="MedicineQuickSearch/MedicineQuickSearch.csproj" />
+  <Project Path="MediSearch/MediSearch.csproj" />
+  <Project Path="MediSearch.Updater/MediSearch.Updater.csproj" />
+</Solution>

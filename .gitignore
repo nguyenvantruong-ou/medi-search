@@ -1,0 +1,44 @@
+# Build results
+[Bb]in/
+[Oo]bj/
+out/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider / JetBrains
+.idea/
+*.sln.iml
+
+# VS Code
+.vscode/
+
+# Test results
+TestResults/
+*.trx
+*.coverage
+*.coveragexml
+
+# NuGet
+*.nupkg
+packages/
+project.lock.json
+project.assets.json
+artifacts/
+
+# Logs
+*.log
+logs/
+
+# Local Codex/agent scratch
+.agents/
+.codex/
+
+# OS files
+Thumbs.db
+Desktop.ini
+.DS_Store

@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Medicine Quick Search</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <main class="shell">
+    <section class="search-panel">
+      <div>
+        <p class="eyebrow">Công cụ nội bộ nhà thuốc</p>
+        <h1>Medicine Quick Search</h1>
+      </div>
+
+      <label class="field">
+        <span>Từ khóa</span>
+        <input id="keyword" placeholder="Tìm theo tên thuốc hoặc hoạt chất..." autocomplete="off">
+      </label>
+
+      <div class="url-row">
+        <label class="field">
+          <span>URL website</span>
+          <input id="urlInput" placeholder="https://example-pharmacy.com/search?q={keyword}" autocomplete="off">
+        </label>
+        <button id="addUrl" class="secondary" type="button">Thêm URL</button>
+      </div>
+
+      <div id="urlList" class="url-list"></div>
+
+      <div class="actions">
+        <button id="search" type="button">Tìm kiếm</button>
+        <button id="clear" class="ghost" type="button">Xóa</button>
+      </div>
+    </section>
+
+    <section class="status-panel">
+      <div class="panel-heading">
+        <h2>Trạng thái nhà cung cấp</h2>
+        <span id="cacheState"></span>
+      </div>
+      <div id="providerStatus" class="provider-list empty">Chưa có lượt tìm kiếm.</div>
+    </section>
+
+    <section class="history-panel">
+      <h2>Lịch sử tìm kiếm</h2>
+      <div id="history" class="history-list empty">Các lượt tìm gần đây sẽ hiển thị tại đây.</div>
+    </section>
+
+    <section class="results-panel">
+      <div class="panel-heading">
+        <h2>Kết quả</h2>
+        <span id="resultCount"></span>
+      </div>
+      <div id="results" class="results-grid empty">Nhập từ khóa rồi chạy tìm kiếm.</div>
+    </section>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>

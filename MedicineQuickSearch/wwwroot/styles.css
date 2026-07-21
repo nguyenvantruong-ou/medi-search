@@ -1,0 +1,297 @@
+:root {
+  color-scheme: light;
+  --bg: #f6f8fb;
+  --panel: #ffffff;
+  --ink: #17202a;
+  --muted: #667085;
+  --line: #d9e1ea;
+  --accent: #0f766e;
+  --accent-dark: #115e59;
+  --danger: #b42318;
+  --ok: #047857;
+  --warn: #b54708;
+  font-family: "Segoe UI", Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+}
+
+.shell {
+  width: min(1180px, calc(100vw - 32px));
+  margin: 28px auto;
+  display: grid;
+  grid-template-columns: minmax(320px, 420px) 1fr;
+  gap: 16px;
+}
+
+section {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 18px;
+}
+
+.search-panel,
+.results-panel {
+  grid-row: span 2;
+}
+
+.eyebrow {
+  margin: 0 0 4px;
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+h1,
+h2 {
+  margin: 0;
+  letter-spacing: 0;
+}
+
+h1 {
+  font-size: 28px;
+}
+
+h2 {
+  font-size: 18px;
+}
+
+.field {
+  display: grid;
+  gap: 7px;
+  margin-top: 16px;
+  color: #344054;
+  font-weight: 650;
+}
+
+input {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 12px 13px;
+  font: inherit;
+}
+
+input:focus {
+  outline: 2px solid rgba(15, 118, 110, 0.18);
+  border-color: var(--accent);
+}
+
+.url-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  align-items: end;
+}
+
+button {
+  border: 0;
+  border-radius: 6px;
+  background: var(--accent);
+  color: white;
+  min-height: 44px;
+  padding: 0 18px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+button:hover {
+  background: var(--accent-dark);
+}
+
+button:disabled {
+  cursor: wait;
+  opacity: 0.72;
+}
+
+.secondary {
+  background: #1f2937;
+}
+
+.ghost {
+  background: transparent;
+  color: #475467;
+  border: 1px solid var(--line);
+}
+
+.url-list,
+.history-list,
+.provider-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.url-chip,
+.history-item,
+.provider-item {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 10px;
+  background: #fbfcfe;
+}
+
+.url-chip {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  align-items: center;
+  word-break: break-word;
+}
+
+.url-chip button {
+  min-height: 32px;
+  padding: 0 10px;
+}
+
+.actions,
+.panel-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.actions {
+  justify-content: flex-start;
+}
+
+.results-grid {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.result-card {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px;
+  background: #ffffff;
+  min-height: 178px;
+  display: grid;
+  gap: 8px;
+}
+
+.provider {
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.result-images {
+  display: flex;
+  gap: 8px;
+  min-height: 72px;
+  position: relative;
+}
+
+.result-images img {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #f3f4f6;
+}
+
+.zoomable-image {
+  cursor: zoom-in;
+}
+
+.zoomable-image:focus {
+  outline: 2px solid rgba(15, 118, 110, 0.35);
+  outline-offset: 2px;
+}
+
+.image-preview {
+  position: fixed;
+  z-index: 50;
+  display: none;
+  width: min(440px, calc(100vw - 28px));
+  max-height: min(440px, calc(100vh - 28px));
+  padding: 10px;
+  pointer-events: none;
+  background: #ffffff;
+  border: 1px solid rgba(23, 32, 42, 0.14);
+  border-radius: 8px;
+  box-shadow: 0 18px 46px rgba(23, 32, 42, 0.24);
+}
+
+.image-preview.is-visible {
+  display: block;
+}
+
+.image-preview img {
+  display: block;
+  width: 100%;
+  max-height: calc(min(440px, 100vh - 28px) - 20px);
+  object-fit: contain;
+  border-radius: 6px;
+  background: #f3f4f6;
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 750;
+  line-height: 1.35;
+}
+
+.price {
+  color: var(--danger);
+  font-weight: 800;
+}
+
+.snippet,
+.meta,
+#resultCount,
+#cacheState {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.status-success {
+  color: var(--ok);
+}
+
+.status-failed,
+.status-timeout {
+  color: var(--danger);
+}
+
+.empty {
+  color: var(--muted);
+}
+
+a {
+  color: var(--accent-dark);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+@media (max-width: 840px) {
+  .shell {
+    grid-template-columns: 1fr;
+  }
+
+  .search-panel,
+  .results-panel {
+    grid-row: auto;
+  }
+
+  .url-row {
+    grid-template-columns: 1fr;
+  }
+}

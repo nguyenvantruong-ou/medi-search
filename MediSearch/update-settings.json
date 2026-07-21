@@ -1,0 +1,7 @@
+{
+  "owner": "nguyenvantruong-ou",
+  "repo": "medi-search",
+  "versionMetadataUrl": "https://github.com/nguyenvantruong-ou/medi-search/releases/latest/download/version.json",
+  "metadataCacheMinutes": 60,
+  "releaseNotes": "Bug fixes and performance improvements."
+}

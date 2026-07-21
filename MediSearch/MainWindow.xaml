@@ -1,0 +1,279 @@
+<Window x:Class="MediSearch.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Medicine Quick Search" Height="760" Width="1180"
+        Icon="logo.png"
+        MinHeight="640" MinWidth="980"
+        Background="#F5F7FA"
+        Loaded="Window_Loaded">
+    <Window.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Segoe UI" />
+            <Setter Property="Foreground" Value="#17202A" />
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="FontFamily" Value="Segoe UI" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="Padding" Value="12,10" />
+            <Setter Property="BorderBrush" Value="#D9E1EA" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+        <Style TargetType="Button">
+            <Setter Property="FontFamily" Value="Segoe UI" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Padding" Value="12,7" />
+            <Setter Property="MinHeight" Value="34" />
+            <Setter Property="Cursor" Value="Hand" />
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="18">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="390" />
+            <ColumnDefinition Width="16" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Column="0" Background="White" BorderBrush="#D9E1EA" BorderThickness="1" CornerRadius="8" Padding="16">
+            <DockPanel LastChildFill="True">
+                <StackPanel DockPanel.Dock="Bottom" Margin="0,10,0,0" HorizontalAlignment="Center">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <TextBlock x:Name="VersionText" Foreground="#667085" FontSize="12" VerticalAlignment="Center" />
+                        <Button x:Name="CheckVersionButton"
+                                Click="CheckVersionButton_Click"
+                                Width="28"
+                                Height="28"
+                                MinHeight="28"
+                                Padding="0"
+                                Margin="6,0,0,0"
+                                Background="Transparent"
+                                BorderBrush="#CBD5E1"
+                                ToolTip="Check for new version on GitHub">
+                            <Viewbox Width="14" Height="14">
+                                <Canvas Width="24" Height="24">
+                                    <Path Stroke="#0F766E"
+                                          StrokeThickness="2"
+                                          StrokeStartLineCap="Round"
+                                          StrokeEndLineCap="Round"
+                                          StrokeLineJoin="Round"
+                                          Fill="Transparent"
+                                          Data="M21 12a9 9 0 1 1-2.64-6.36" />
+                                    <Path Stroke="#0F766E"
+                                          StrokeThickness="2"
+                                          StrokeStartLineCap="Round"
+                                          StrokeEndLineCap="Round"
+                                          StrokeLineJoin="Round"
+                                          Fill="Transparent"
+                                          Data="M21 3v6h-6" />
+                                    <Path Stroke="#0F766E"
+                                          StrokeThickness="2"
+                                          StrokeStartLineCap="Round"
+                                          StrokeEndLineCap="Round"
+                                          StrokeLineJoin="Round"
+                                          Fill="Transparent"
+                                          Data="m9 12 2 2 4-4" />
+                                </Canvas>
+                            </Viewbox>
+                        </Button>
+                    </StackPanel>
+                    <TextBlock x:Name="UpdateStatusText" Foreground="#0F766E" FontSize="12" HorizontalAlignment="Center" Margin="0,3,0,0" Visibility="Collapsed" />
+                    <Button x:Name="UpdateNowButton"
+                            Content="Kiểm tra cập nhật"
+                            Click="UpdateNowButton_Click"
+                            Background="#0F766E"
+                            Foreground="White"
+                            BorderThickness="0"
+                            FontSize="12"
+                            MinHeight="28"
+                            Padding="12,4"
+                            Margin="0,6,0,0"
+                            Visibility="Collapsed" />
+                </StackPanel>
+
+                <StackPanel DockPanel.Dock="Top">
+                    <Grid Margin="0,0,0,14">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="48" />
+                            <ColumnDefinition Width="10" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Border Width="48" Height="48" Background="#EFF8FF" BorderBrush="#B9E6FE" BorderThickness="1" CornerRadius="8">
+                            <Image Source="logo.png" Stretch="UniformToFill" ClipToBounds="True" />
+                        </Border>
+                        <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                            <TextBlock Text="INTERNAL PHARMACY TOOL" Foreground="#0F766E" FontSize="11" FontWeight="Bold" />
+                            <TextBlock Text="Medicine Quick Search" FontSize="22" FontWeight="Bold" Margin="0,2,0,0" TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Grid>
+
+                    <TextBlock Text="Từ khóa" FontWeight="SemiBold" Margin="0,0,0,6" />
+                    <TextBox x:Name="KeywordBox" Text="Panadol xanh" ToolTip="Tìm theo tên thuốc hoặc hoạt chất..." KeyDown="KeywordBox_KeyDown" />
+
+                    <TextBlock Text="Custom provider URL" FontWeight="SemiBold" Margin="0,12,0,6" />
+                    <TextBox x:Name="UrlBox" Text="" ToolTip="Ví dụ: https://example.com/search?q={keyword}" KeyDown="UrlBox_KeyDown" />
+
+                    <Grid x:Name="SearchActionsGrid" Margin="0,8,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="8" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Button x:Name="AddUrlButton" Grid.Column="0" Content="Thêm URL" Click="AddUrlButton_Click" Background="#1F2937" Foreground="White" BorderThickness="0" />
+                        <Button x:Name="SearchButton" Grid.Column="2" Content="Tìm kiếm" Click="SearchButton_Click" Background="#0F766E" Foreground="White" BorderThickness="0" />
+                    </Grid>
+
+                    <Border Margin="0,10,0,0" Padding="10" Background="#F8FAFC" BorderBrush="#D9E1EA" BorderThickness="1" CornerRadius="6">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="8" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="8" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="8" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.ColumnSpan="5">
+                                <TextBlock Text="API status" FontWeight="SemiBold" FontSize="12" Foreground="#475467" />
+                                <TextBlock x:Name="ApiStatusText" Text="API chưa kiểm tra" TextWrapping="Wrap" Margin="0,2,0,0" />
+                            </StackPanel>
+
+                            <TextBox x:Name="ApiBaseBox" Grid.Row="2" Grid.Column="0" Text="http://localhost:5030" Padding="8,5" FontSize="12" />
+                            <Button x:Name="StopBackendButton" Grid.Row="2" Grid.Column="2" Content="Dừng" Click="StopBackendButton_Click" MinHeight="30" Padding="10,4" FontSize="12" />
+                            <Button x:Name="RestartBackendButton" Grid.Row="2" Grid.Column="4" Content="Khởi động" Click="RestartBackendButton_Click" MinHeight="30" Padding="10,4" FontSize="12" />
+                        </Grid>
+                    </Border>
+
+                    <CheckBox x:Name="OpenWebCheck" Content="Mở trang web sau khi tìm kiếm thành công" Margin="0,10,0,0" />
+
+                    <TextBlock Text="Provider URL list" FontWeight="Bold" FontSize="17" Margin="0,16,0,8" />
+                </StackPanel>
+
+                <ListBox x:Name="UrlList" Margin="0,0,0,8" MinHeight="120">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Border Margin="0,3" Padding="8,7" BorderBrush="#E5E7EB" BorderThickness="0,0,0,1">
+                                <TextBlock Text="{Binding}" TextWrapping="Wrap" VerticalAlignment="Center" />
+                                <Border.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Xóa URL" Click="RemoveUrlMenuItem_Click" />
+                                    </ContextMenu>
+                                </Border.ContextMenu>
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+        </Border>
+
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="170" />
+                <RowDefinition Height="16" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Border Grid.Row="0" Background="White" BorderBrush="#D9E1EA" BorderThickness="1" CornerRadius="8" Padding="18">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="Provider status" FontSize="18" FontWeight="Bold" />
+                    <ListBox x:Name="ProviderStatusList" Grid.Row="1" Margin="0,8,0,0" />
+                </Grid>
+            </Border>
+
+            <Border Grid.Row="2" Background="White" BorderBrush="#D9E1EA" BorderThickness="1" CornerRadius="8" Padding="18">
+                <TabControl>
+                    <TabItem Header="Kết quả">
+                        <Grid Margin="0,8,0,0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <DockPanel>
+                                <TextBlock Text="Kết quả" FontSize="18" FontWeight="Bold" />
+                                <TextBlock x:Name="ResultCountText" DockPanel.Dock="Right" Foreground="#667085" HorizontalAlignment="Right" />
+                            </DockPanel>
+                            <ListView x:Name="ResultsList" Grid.Row="1" Margin="0,12,0,0">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Header="Nhà cung cấp" DisplayMemberBinding="{Binding Provider}" Width="170" />
+                                        <GridViewColumn Header="Sản phẩm" Width="460">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <Grid Margin="0,4">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="64" />
+                                                            <ColumnDefinition Width="6" />
+                                                            <ColumnDefinition Width="64" />
+                                                            <ColumnDefinition Width="10" />
+                                                            <ColumnDefinition Width="*" />
+                                                        </Grid.ColumnDefinitions>
+                                                        <Border Width="64" Height="64" Background="#F3F4F6" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="6">
+                                                            <Image Source="{Binding ImageUrl}" Stretch="Uniform" ToolTipService.InitialShowDelay="0" ToolTipService.ShowDuration="60000">
+                                                                <Image.ToolTip>
+                                                                    <ToolTip Placement="Mouse" Background="Transparent" BorderThickness="0" Padding="0">
+                                                                        <Border Background="White" BorderBrush="#D9E1EA" BorderThickness="1" CornerRadius="8" Padding="10">
+                                                                            <Image Source="{Binding ImageUrl}" Width="360" Height="360" Stretch="Uniform" />
+                                                                        </Border>
+                                                                    </ToolTip>
+                                                                </Image.ToolTip>
+                                                            </Image>
+                                                        </Border>
+                                                        <Border Grid.Column="2" Width="64" Height="64" Background="#F3F4F6" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="6">
+                                                            <Image Source="{Binding ScreenshotUrl}" Stretch="UniformToFill" ToolTipService.InitialShowDelay="0" ToolTipService.ShowDuration="60000">
+                                                                <Image.ToolTip>
+                                                                    <ToolTip Placement="Mouse" Background="Transparent" BorderThickness="0" Padding="0">
+                                                                        <Border Background="White" BorderBrush="#D9E1EA" BorderThickness="1" CornerRadius="8" Padding="10">
+                                                                            <Image Source="{Binding ScreenshotUrl}" Width="520" Height="420" Stretch="Uniform" />
+                                                                        </Border>
+                                                                    </ToolTip>
+                                                                </Image.ToolTip>
+                                                            </Image>
+                                                        </Border>
+                                                        <TextBlock Grid.Column="4" Text="{Binding Title}" TextWrapping="Wrap" VerticalAlignment="Center" />
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                        <GridViewColumn Header="Giá" DisplayMemberBinding="{Binding Price}" Width="120" />
+                                        <GridViewColumn Header="Liên kết" Width="80">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock VerticalAlignment="Center">
+                                                        <Hyperlink NavigateUri="{Binding Url}" RequestNavigate="ResultLink_RequestNavigate">Mở</Hyperlink>
+                                                    </TextBlock>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                        <GridViewColumn Header="Mô tả" DisplayMemberBinding="{Binding Snippet}" Width="150" />
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                        </Grid>
+                    </TabItem>
+                    <TabItem Header="Nhật ký">
+                        <Grid Margin="0,8,0,0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <DockPanel>
+                                <TextBlock Text="Nhật ký tìm kiếm" FontSize="18" FontWeight="Bold" />
+                                <Button x:Name="RefreshLogButton" DockPanel.Dock="Right" Content="Tải lại" Click="RefreshLogButton_Click" Padding="12,6" MinHeight="32" />
+                            </DockPanel>
+                            <TextBox x:Name="LogBox" Grid.Row="1" Margin="0,12,0,0" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" FontFamily="Consolas" FontSize="12" />
+                        </Grid>
+                    </TabItem>
+                </TabControl>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>
